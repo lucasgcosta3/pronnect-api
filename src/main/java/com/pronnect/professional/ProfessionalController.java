@@ -1,6 +1,8 @@
 package com.pronnect.professional;
 
-import com.pronnect.professional.dto.ProfessionalProfileRequest;
+import com.pronnect.professional.dto.CreateProfessionalProfileRequest;
+import com.pronnect.professional.dto.ProfessionalProfileResponse;
+import com.pronnect.professional.mapper.ProfessionalProfileMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,10 +19,11 @@ import java.util.UUID;
 public class ProfessionalController {
 
     private final ProfessionalService service;
+    private final ProfessionalProfileMapper mapper;
 
     @PostMapping("/profile")
     public ResponseEntity<Void> createProfile(@RequestParam UUID accountId,
-        @Valid @RequestBody ProfessionalProfileRequest request) {
+                                              @Valid @RequestBody CreateProfessionalProfileRequest request) {
 
         service.createProfile(accountId, request);
 
@@ -28,7 +31,7 @@ public class ProfessionalController {
     }
 
     @GetMapping
-    public Page<ProfessionalProfile> search(Pageable pageable) {
+    public Page<ProfessionalProfileResponse> search(Pageable pageable) {
         return service.searchProfessionals(pageable);
     }
 }

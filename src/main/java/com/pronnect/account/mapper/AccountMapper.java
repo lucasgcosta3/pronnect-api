@@ -1,6 +1,6 @@
 package com.pronnect.account.mapper;
 
-import com.pronnect.account.Account;
+import com.pronnect.account.entity.Account;
 import com.pronnect.account.dto.AccountResponse;
 import org.mapstruct.Mapper;
 

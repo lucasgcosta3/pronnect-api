@@ -9,7 +9,6 @@ public record CompanyProfileResponse(
         String name,
         String description,
         String contactEmail,
-        String website,
         String location,
         Boolean profileCompleted,
         LocalDateTime createdAt

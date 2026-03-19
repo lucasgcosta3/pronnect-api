@@ -13,8 +13,6 @@ public record CreateCompanyProfileRequest(
         @Email
         String contactEmail,
 
-        String website,
-
         String location
 
 ) {

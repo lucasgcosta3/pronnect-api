@@ -1,6 +1,6 @@
 package com.pronnect.company.mapper;
 
-import com.pronnect.company.CompanyProfile;
+import com.pronnect.company.entity.CompanyProfile;
 import com.pronnect.company.dto.CompanyProfileResponse;
 import com.pronnect.company.dto.CreateCompanyProfileRequest;
 import com.pronnect.company.dto.UpdateCompanyProfileRequest;

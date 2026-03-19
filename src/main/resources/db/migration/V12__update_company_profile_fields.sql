@@ -1,24 +1,17 @@
-CREATE TABLE company_profile (
-    id UUID PRIMARY KEY,
+ALTER TABLE company_profile
+RENAME COLUMN company_name TO name;
 
-    account_id UUID NOT NULL UNIQUE,
+ALTER TABLE company_profile
+ALTER COLUMN name TYPE VARCHAR(255);
 
-    name VARCHAR(255) NOT NULL,
+ALTER TABLE company_profile
+ADD COLUMN website VARCHAR(255);
 
-    description TEXT,
+ALTER TABLE company_profile
+ADD COLUMN location VARCHAR(255);
 
-    contact_email VARCHAR(255),
+ALTER TABLE company_profile
+ADD COLUMN profile_completed BOOLEAN NOT NULL DEFAULT false;
 
-    website VARCHAR(255),
-
-    location VARCHAR(255),
-
-    profile_completed BOOLEAN NOT NULL,
-
-    created_at TIMESTAMP NOT NULL,
-
-    CONSTRAINT fk_company_account
-        FOREIGN KEY (account_id)
-        REFERENCES account(id)
-        ON DELETE CASCADE
-);
+ALTER TABLE company_profile
+ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT now();

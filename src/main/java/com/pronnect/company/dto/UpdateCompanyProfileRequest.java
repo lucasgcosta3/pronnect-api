@@ -11,8 +11,6 @@ public record UpdateCompanyProfileRequest(
         @Email
         String contactEmail,
 
-        String website,
-
         String location,
 
         Boolean profileCompleted

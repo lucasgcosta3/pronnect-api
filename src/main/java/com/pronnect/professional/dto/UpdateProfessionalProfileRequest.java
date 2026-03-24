@@ -11,9 +11,7 @@ public record UpdateProfessionalProfileRequest(
         String description,
 
         @Email
-        String contactEmail,
-
-        Boolean profileCompleted
+        String contactEmail
 
 ) {
 }

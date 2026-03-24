@@ -1,4 +1,4 @@
-package com.pronnect.account.entity;
+package com.pronnect.account.enums;
 
 public enum AccountRole {
     PROFESSIONAL,

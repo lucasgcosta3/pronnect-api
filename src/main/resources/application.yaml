@@ -24,5 +24,5 @@ spring:
       mode: never
 
 jwt:
-  secret: 12345678912345678912345678912345
+  secret: u7Q9jK8vTzFh2XzYwq3n5pL8sV0hR2mJ4d9aB6cE7fI=
   expiration: 86400000

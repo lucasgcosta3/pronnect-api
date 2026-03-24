@@ -3,6 +3,7 @@ package com.pronnect.professional.entity;
 import com.pronnect.account.entity.Account;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -19,6 +20,8 @@ import java.util.UUID;
 public class ProfessionalProfile {
 
     @Id
+    @GeneratedValue
+    @UuidGenerator
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)

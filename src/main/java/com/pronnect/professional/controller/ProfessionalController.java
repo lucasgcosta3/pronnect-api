@@ -73,11 +73,13 @@ public class ProfessionalController {
 
     @GetMapping
     public ResponseEntity<Page<ProfessionalProfileResponse>> search(
-            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String skill,
+            @RequestParam(required = false) String text,
             Pageable pageable
     ) {
 
-        Page<ProfessionalProfile> profiles = service.searchProfessionals(query, pageable);
+        Page<ProfessionalProfile> profiles =
+                service.searchProfessionals(skill, text, pageable);
 
         Page<ProfessionalProfileResponse> response =
                 profiles.map(mapper::toResponse);
@@ -90,7 +92,7 @@ public class ProfessionalController {
     public ResponseEntity<Void> addSkill(
             @RequestBody @Valid AddSkillRequest request
     ) {
-        service.addSkill(request.skillId());
+        service.addSkill(request);
         return ResponseEntity.ok().build();
     }
 

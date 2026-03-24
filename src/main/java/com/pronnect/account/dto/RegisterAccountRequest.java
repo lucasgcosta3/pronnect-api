@@ -1,6 +1,6 @@
 package com.pronnect.account.dto;
 
-import com.pronnect.account.entity.AccountRole;
+import com.pronnect.account.enums.AccountRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

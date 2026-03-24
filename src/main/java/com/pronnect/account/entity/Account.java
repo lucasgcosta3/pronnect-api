@@ -1,11 +1,13 @@
 package com.pronnect.account.entity;
 
+import com.pronnect.account.enums.AccountRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,6 +22,8 @@ import java.util.UUID;
 public class Account {
 
     @Id
+    @GeneratedValue
+    @UuidGenerator
     private UUID id;
 
     @Column(nullable = false)

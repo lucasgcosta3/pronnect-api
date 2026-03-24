@@ -7,7 +7,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,12 +55,36 @@ public class GlobalErrorHandlerAdvice {
         return buildError(HttpStatus.BAD_REQUEST, e.getReason(), request);
     }
 
+    @ExceptionHandler(SkillAlreadyAddedException.class)
+    public ResponseEntity<DefaultErrorMessage> handleSkillAlreadyAddedException(
+            SkillAlreadyAddedException e,
+            HttpServletRequest request
+    ) {
+        return buildError(HttpStatus.BAD_REQUEST, e.getReason(), request);
+    }
+
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<DefaultErrorMessage> handleInvalidCredentialsException(
             InvalidCredentialsException e,
             HttpServletRequest request
     ) {
         return buildError(HttpStatus.UNAUTHORIZED, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<DefaultErrorMessage> handleForbiddenException(
+            ForbiddenException e,
+            HttpServletRequest request
+    ) {
+        return buildError(HttpStatus.FORBIDDEN, e.getMessage(), request);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<DefaultErrorMessage> handleBusinessException(
+            BusinessException e,
+            HttpServletRequest request
+    ) {
+        return buildError(HttpStatus.BAD_REQUEST, e.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

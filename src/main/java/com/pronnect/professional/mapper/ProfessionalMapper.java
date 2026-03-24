@@ -1,22 +1,28 @@
 package com.pronnect.professional.mapper;
 
-import com.pronnect.professional.entity.ProfessionalProfile;
-import com.pronnect.professional.dto.CreateProfessionalProfileRequest;
 import com.pronnect.professional.dto.ProfessionalProfileResponse;
-import com.pronnect.professional.dto.UpdateProfessionalProfileRequest;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import com.pronnect.professional.entity.ProfessionalProfile;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface ProfessionalMapper {
+import java.util.List;
 
-    ProfessionalProfile toEntity(CreateProfessionalProfileRequest request);
+@Component
+public class ProfessionalMapper {
 
-    ProfessionalProfileResponse toResponse(ProfessionalProfile entity);
+    public ProfessionalProfileResponse toResponse(ProfessionalProfile entity) {
 
-    void updateEntity(
-            UpdateProfessionalProfileRequest request,
-            @MappingTarget ProfessionalProfile entity
-    );
+        List<String> skills = entity.getSkills().stream()
+                .map(ps -> ps.getSkill().getName())
+                .toList();
 
+        return new ProfessionalProfileResponse(
+                entity.getId(),
+                entity.getHeadline(),
+                entity.getDescription(),
+                entity.getContactEmail(),
+                entity.isProfileCompleted(),
+                skills,
+                entity.getCreatedAt()
+        );
+    }
 }

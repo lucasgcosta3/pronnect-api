@@ -21,7 +21,7 @@ public class SkillController {
 
     @GetMapping
     public ResponseEntity<List<SkillResponse>> getAll() {
-        List<SkillResponse> skills = repository.findAll()
+        var skills = repository.findAll()
                 .stream()
                 .map(mapper::toResponse)
                 .toList();

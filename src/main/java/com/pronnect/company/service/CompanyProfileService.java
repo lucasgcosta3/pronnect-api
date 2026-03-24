@@ -31,7 +31,6 @@ public class CompanyProfileService {
         }
 
         CompanyProfile profile = CompanyProfile.builder()
-                .id(UUID.randomUUID())
                 .account(account)
                 .name(request.name())
                 .description(request.description())
@@ -65,8 +64,16 @@ public class CompanyProfileService {
         profile.setDescription(request.description());
         profile.setContactEmail(request.contactEmail());
         profile.setLocation(request.location());
+        profile.setProfileCompleted(isProfileComplete(profile));
 
         return repository.save(profile);
+    }
+
+    private boolean isProfileComplete(CompanyProfile profile) {
+        return profile.getName() != null && !profile.getName().isBlank()
+                && profile.getDescription() != null && !profile.getDescription().isBlank()
+                && profile.getContactEmail() != null && !profile.getContactEmail().isBlank()
+                && profile.getLocation() != null && !profile.getLocation().isBlank();
     }
 
     @Transactional

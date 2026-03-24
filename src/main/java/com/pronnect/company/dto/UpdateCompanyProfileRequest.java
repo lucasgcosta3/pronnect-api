@@ -11,9 +11,7 @@ public record UpdateCompanyProfileRequest(
         @Email
         String contactEmail,
 
-        String location,
-
-        Boolean profileCompleted
+        String location
 
 ) {
 }

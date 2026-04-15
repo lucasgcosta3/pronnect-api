@@ -5,9 +5,9 @@ app:
 spring:
   application:
     name: pronnect-api
-
+    
   datasource:
-    url: ${DB_URL}
+    jdbc-url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver

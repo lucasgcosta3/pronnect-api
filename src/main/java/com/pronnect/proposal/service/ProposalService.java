@@ -14,6 +14,7 @@ import com.pronnect.proposal.entity.Proposal;
 import com.pronnect.proposal.enums.ProposalStatus;
 import com.pronnect.exception.ForbiddenException;
 import com.pronnect.proposal.repository.ProposalRepository;
+import com.pronnect.servicecontract.service.ServiceContractService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class ProposalService {
     private final CompanyRepository companyRepository;
     private final ProfessionalRepository professionalRepository;
     private final ConversationService conversationService;
+    private final ServiceContractService serviceContractService;
     private final AuthenticatedUserService auth;
 
     @Transactional
@@ -45,14 +47,14 @@ public class ProposalService {
                 .orElseThrow(() -> new NotFoundException("Professional not found"));
 
         boolean alreadyExists = repository
-                .existsByCompanyIdAndProfessionalIdAndStatus(
+                .existsByCompanyIdAndProfessionalIdAndStatusIn(
                         company.getId(),
                         professional.getId(),
-                        ProposalStatus.PENDING
+                        List.of(ProposalStatus.PENDING, ProposalStatus.ACCEPTED)
                 );
 
         if (alreadyExists) {
-            throw new BusinessException("You already have a pending proposal for this professional");
+            throw new BusinessException("You already have an active proposal for this professional");
         }
 
         Proposal proposal = new Proposal();
@@ -104,8 +106,8 @@ public class ProposalService {
         }
 
         proposal.setStatus(ProposalStatus.ACCEPTED);
-
         conversationService.createForProposal(proposal);
+        serviceContractService.createForProposal(proposal);
     }
 
     @Transactional
@@ -124,6 +126,24 @@ public class ProposalService {
         }
 
         proposal.setStatus(ProposalStatus.REJECTED);
+    }
+
+    @Transactional
+    public void cancel(UUID proposalId) {
+
+        Proposal proposal = getProposalOrThrow(proposalId);
+
+        Account account = auth.getCurrentAccount();
+
+        if (!proposal.getCompany().getAccount().getId().equals(account.getId())) {
+            throw new ForbiddenException("You cannot cancel this proposal");
+        }
+
+        if (proposal.getStatus() != ProposalStatus.PENDING) {
+            throw new BusinessException("Only pending proposals can be cancelled");
+        }
+
+        proposal.setStatus(ProposalStatus.CANCELLED);
     }
 
     private Proposal getProposalOrThrow(UUID id) {

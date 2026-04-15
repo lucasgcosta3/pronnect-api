@@ -17,6 +17,7 @@ public class ProfessionalMapper {
 
         return new ProfessionalProfileResponse(
                 entity.getId(),
+                entity.getAccount().getName(),
                 entity.getHeadline(),
                 entity.getDescription(),
                 entity.getContactEmail(),

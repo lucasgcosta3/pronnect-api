@@ -1,20 +1,21 @@
 app:
   cors:
-    allowed-origins: http://localhost:3000
+    allowed-origins: ${CORS_ORIGIN:http://localhost:3000}
 
 spring:
   application:
     name: pronnect-api
+
   datasource:
-    url: jdbc:postgresql://localhost:5433/pronnect
-    username: postgres
-    password: postgres
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -27,6 +28,9 @@ spring:
     init:
       mode: never
 
+server:
+  port: ${PORT:8080}
+
 jwt:
-  secret: u7Q9jK8vTzFh2XzYwq3n5pL8sV0hR2mJ4d9aB6cE7fI=
-  expiration: 86400000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}

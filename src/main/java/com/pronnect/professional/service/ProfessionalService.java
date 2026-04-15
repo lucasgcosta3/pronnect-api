@@ -47,6 +47,11 @@ public class ProfessionalService {
             throw new ProfileAlreadyExistsException("Professional profile already exists");
         }
 
+        // Update account name if provided
+        if (request.name() != null && !request.name().isBlank()) {
+            account.setName(request.name());
+        }
+
         ProfessionalProfile profile = ProfessionalProfile.builder()
                 .account(account)
                 .headline(request.headline())
@@ -75,6 +80,11 @@ public class ProfessionalService {
     @Transactional
     public ProfessionalProfile updateProfile(UpdateProfessionalProfileRequest request) {
         ProfessionalProfile profile = getCurrentProfessional();
+
+        // Update account name if provided
+        if (request.name() != null && !request.name().isBlank()) {
+            profile.getAccount().setName(request.name());
+        }
 
         profile.setHeadline(request.headline());
         profile.setDescription(request.description());
@@ -120,7 +130,6 @@ public class ProfessionalService {
 
     @Transactional
     public void addSkill(AddSkillRequest request) {
-
         ProfessionalProfile profile = getCurrentProfessional();
 
         Skill skill = skillRepository.findById(request.skillId())
@@ -134,13 +143,13 @@ public class ProfessionalService {
         }
 
         ProfessionalSkill ps = new ProfessionalSkill();
-
         ps.setId(new ProfessionalSkillId(profile.getId(), skill.getId()));
         ps.setProfessionalProfile(profile);
         ps.setSkill(skill);
 
         profile.getSkills().add(ps);
         profile.setProfileCompleted(isProfileComplete(profile));
+        repository.save(profile);
     }
 
     @Transactional
@@ -158,6 +167,7 @@ public class ProfessionalService {
         professionalSkillRepository
                 .deleteByProfessionalProfileIdAndSkillId(profile.getId(), skillId);
 
+        profile.getSkills().removeIf(ps -> ps.getSkill().getId().equals(skillId));
         profile.setProfileCompleted(isProfileComplete(profile));
         repository.save(profile);
     }

@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Size;
 
 public record UpdateProfessionalProfileRequest(
 
+        @Size(max = 100)
+        String name,
+
         @Size(max = 150)
         String headline,
 

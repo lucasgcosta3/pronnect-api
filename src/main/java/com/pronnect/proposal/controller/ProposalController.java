@@ -45,22 +45,6 @@ public class ProposalController {
         return ResponseEntity.ok(response);
     }
 
-    // ACCEPT
-    @PatchMapping("/{id}/accept")
-    @PreAuthorize("hasRole('PROFESSIONAL')")
-    public ResponseEntity<Void> accept(@PathVariable UUID id) {
-        service.accept(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // REJECT
-    @PatchMapping("/{id}/reject")
-    @PreAuthorize("hasRole('PROFESSIONAL')")
-    public ResponseEntity<Void> reject(@PathVariable UUID id) {
-        service.reject(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PostMapping
     @PreAuthorize("hasRole('COMPANY')")
     public ResponseEntity<ProposalResponse> create(
@@ -68,5 +52,26 @@ public class ProposalController {
     ) {
         Proposal proposal = service.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(proposal));
+    }
+
+    @PatchMapping("/{id}/accept")
+    @PreAuthorize("hasRole('PROFESSIONAL')")
+    public ResponseEntity<Void> accept(@PathVariable UUID id) {
+        service.accept(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/reject")
+    @PreAuthorize("hasRole('PROFESSIONAL')")
+    public ResponseEntity<Void> reject(@PathVariable UUID id) {
+        service.reject(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('COMPANY')")
+    public ResponseEntity<Void> cancel(@PathVariable UUID id) {
+        service.cancel(id);
+        return ResponseEntity.noContent().build();
     }
 }

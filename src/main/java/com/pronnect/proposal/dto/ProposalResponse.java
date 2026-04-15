@@ -10,6 +10,7 @@ public record ProposalResponse(
         UUID professionalId,
         String message,
         BigDecimal price,
-        String status
+        String status,
+        UUID contractId
 
 ) {}

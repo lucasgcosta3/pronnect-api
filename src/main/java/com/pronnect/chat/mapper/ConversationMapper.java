@@ -25,12 +25,12 @@ public class ConversationMapper {
 
     private String resolveOtherPartyName(Conversation conversation, UUID currentAccountId) {
 
-        Account companyAccount = conversation.getProposal().getCompany().getAccount();
+        UUID companyAccountId = conversation.getProposal().getCompany().getAccount().getId();
 
-        if (companyAccount.getId().equals(currentAccountId)) {
+        if (companyAccountId.equals(currentAccountId)) {
             return conversation.getProposal().getProfessional().getAccount().getName();
         }
 
-        return companyAccount.getName();
+        return conversation.getProposal().getCompany().getName();
     }
 }

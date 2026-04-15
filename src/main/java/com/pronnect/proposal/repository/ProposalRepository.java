@@ -13,10 +13,10 @@ public interface ProposalRepository extends JpaRepository<Proposal, UUID> {
 
     List<Proposal> findByCompanyId(UUID companyId);
 
-    boolean existsByCompanyIdAndProfessionalIdAndStatus(
+    boolean existsByCompanyIdAndProfessionalIdAndStatusIn(
             UUID companyId,
             UUID professionalId,
-            ProposalStatus status
+            List<ProposalStatus> status
     );
 
 }

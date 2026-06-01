@@ -1,6 +1,6 @@
 app:
   cors:
-    allowed-origins: http://localhost:3000
+    allowed-origins: http://localhost:3000,http://127.0.0.1:3000
 
 spring:
   application:
@@ -30,3 +30,8 @@ spring:
 jwt:
   secret: u7Q9jK8vTzFh2XzYwq3n5pL8sV0hR2mJ4d9aB6cE7fI=
   expiration: 86400000
+
+payment:
+  mock:
+    auto-approve-seconds: 5
+    enabled: true

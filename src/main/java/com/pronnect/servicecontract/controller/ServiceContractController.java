@@ -1,5 +1,6 @@
 package com.pronnect.servicecontract.controller;
 
+import com.pronnect.servicecontract.dto.ProfileSummaryResponse;
 import com.pronnect.servicecontract.dto.ServiceContractResponse;
 import com.pronnect.servicecontract.entity.ServiceContract;
 import com.pronnect.servicecontract.mapper.ServiceContractMapper;
@@ -29,6 +30,11 @@ public class ServiceContractController {
     public ResponseEntity<ServiceContractResponse> getByProposal(@PathVariable UUID proposalId) {
         ServiceContract contract = service.getByProposalId(proposalId);
         return ResponseEntity.ok(mapper.toResponse(contract));
+    }
+
+    @GetMapping("/account/{accountId}/summary")
+    public ResponseEntity<ProfileSummaryResponse> getProfileSummary(@PathVariable UUID accountId) {
+        return ResponseEntity.ok(service.getProfileSummary(accountId));
     }
 
     @GetMapping("/me")

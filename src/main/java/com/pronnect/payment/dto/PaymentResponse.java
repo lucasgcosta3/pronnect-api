@@ -11,6 +11,11 @@ public record PaymentResponse(
         BigDecimal platformFee,
         BigDecimal professionalAmount,
         String status,
+        String paymentMethod,
+        String pixQrCode,
+        String pixCopyPaste,
+        LocalDateTime expiresAt,
         LocalDateTime createdAt,
-        LocalDateTime releasedAt
+        LocalDateTime releasedAt,
+        LocalDateTime refundedAt
 ) {}

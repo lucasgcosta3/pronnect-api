@@ -37,11 +37,29 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @Column(name = "external_payment_id")
+    private String externalPaymentId;
+
+    @Column(name = "payment_method", length = 30)
+    private String paymentMethod;
+
+    @Column(name = "pix_qr_code", columnDefinition = "TEXT")
+    private String pixQrCode;
+
+    @Column(name = "pix_copy_paste", columnDefinition = "TEXT")
+    private String pixCopyPaste;
+
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "released_at")
     private LocalDateTime releasedAt;
+
+    @Column(name = "refunded_at")
+    private LocalDateTime refundedAt;
 
     @PrePersist
     public void prePersist() {

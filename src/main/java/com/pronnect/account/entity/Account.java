@@ -38,6 +38,15 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountRole role;
 
+    @Column(length = 14)
+    private String cpf;
+
+    @Column(length = 18)
+    private String cnpj;
+
+    @Column(name = "person_type", length = 2)
+    private String personType;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

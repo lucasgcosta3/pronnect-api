@@ -18,12 +18,14 @@ import com.pronnect.skill.dto.SkillResponse;
 import com.pronnect.skill.entity.Skill;
 import com.pronnect.skill.mapper.SkillMapper;
 import com.pronnect.skill.repository.SkillRepository;
+import com.pronnect.storage.AvatarStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +39,7 @@ public class ProfessionalService {
     private final SkillRepository skillRepository;
     private final SkillMapper skillMapper;
     private final AuthenticatedUserService authenticatedUserService;
+    private final AvatarStorageService avatarStorageService;
 
     @Transactional
     public ProfessionalProfile createProfile(CreateProfessionalProfileRequest request) {
@@ -57,6 +60,7 @@ public class ProfessionalService {
                 .headline(request.headline())
                 .description(request.description())
                 .contactEmail(request.contactEmail())
+                .avatarUrl(request.avatarUrl())
                 .profileCompleted(false)
                 .build();
 
@@ -89,8 +93,17 @@ public class ProfessionalService {
         profile.setHeadline(request.headline());
         profile.setDescription(request.description());
         profile.setContactEmail(request.contactEmail());
+        profile.setAvatarUrl(request.avatarUrl());
         profile.setProfileCompleted(isProfileComplete(profile));
 
+        return repository.save(profile);
+    }
+
+    @Transactional
+    public ProfessionalProfile updateAvatar(MultipartFile file) {
+        ProfessionalProfile profile = getCurrentProfessional();
+        String avatarUrl = avatarStorageService.store(file);
+        profile.setAvatarUrl(avatarUrl);
         return repository.save(profile);
     }
 

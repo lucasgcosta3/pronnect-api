@@ -34,3 +34,8 @@ server:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
+
+payment:
+  mock:
+    auto-approve-seconds: ${PAYMENT_AUTO_APPROVE_SECONDS:10}
+    enabled: ${PAYMENT_MOCK_ENABLED:false}

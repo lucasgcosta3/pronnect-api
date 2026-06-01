@@ -37,6 +37,9 @@ public class ProfessionalProfile {
     @Column(name = "contact_email")
     private String contactEmail;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     @Column(name = "profile_completed", nullable = false)
     private boolean profileCompleted;
 

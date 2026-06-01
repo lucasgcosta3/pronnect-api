@@ -13,7 +13,9 @@ public record CreateCompanyProfileRequest(
         @Email
         String contactEmail,
 
-        String location
+        String location,
+
+        String avatarUrl
 
 ) {
 }

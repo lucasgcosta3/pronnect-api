@@ -20,6 +20,12 @@ public record RegisterAccountRequest(
         String password,
 
         @NotNull
-        AccountRole role
+        AccountRole role,
+
+        String cpf,
+
+        String cnpj,
+
+        String personType
 
 ) {}

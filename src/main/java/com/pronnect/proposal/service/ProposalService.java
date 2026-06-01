@@ -146,6 +146,10 @@ public class ProposalService {
         proposal.setStatus(ProposalStatus.CANCELLED);
     }
 
+    public Proposal getById(UUID id) {
+        return getProposalOrThrow(id);
+    }
+
     private Proposal getProposalOrThrow(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Proposal not found"));

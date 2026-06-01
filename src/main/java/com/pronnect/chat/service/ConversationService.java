@@ -4,6 +4,7 @@ import com.pronnect.account.entity.Account;
 import com.pronnect.auth.security.AuthenticatedUserService;
 import com.pronnect.chat.entity.Conversation;
 import com.pronnect.chat.repository.ConversationRepository;
+import com.pronnect.chat.repository.MessageRepository;
 import com.pronnect.exception.BusinessException;
 import com.pronnect.exception.ForbiddenException;
 import com.pronnect.exception.NotFoundException;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class ConversationService {
 
     private final ConversationRepository conversationRepository;
+    private final MessageRepository messageRepository;
     private final AuthenticatedUserService auth;
 
     @Transactional
@@ -61,6 +63,17 @@ public class ConversationService {
     public Conversation getById(UUID id) {
         return conversationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Conversation not found"));
+    }
+
+    @Transactional
+    public void delete(UUID id) {
+        Account account = auth.getCurrentAccount();
+        Conversation conversation = getById(id);
+        
+        assertIsParticipant(conversation, account.getId());
+
+        messageRepository.deleteByConversationId(id);
+        conversationRepository.delete(conversation);
     }
 
     private void assertIsParticipant(Conversation conversation, UUID accountId) {

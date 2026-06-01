@@ -14,7 +14,9 @@ public record CreateProfessionalProfileRequest(
         String description,
 
         @Email
-        String contactEmail
+        String contactEmail,
+
+        String avatarUrl
 
 ) {
 }

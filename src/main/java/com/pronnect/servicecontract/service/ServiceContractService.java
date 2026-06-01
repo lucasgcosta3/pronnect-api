@@ -5,7 +5,11 @@ import com.pronnect.auth.security.AuthenticatedUserService;
 import com.pronnect.exception.BusinessException;
 import com.pronnect.exception.ForbiddenException;
 import com.pronnect.exception.NotFoundException;
+import com.pronnect.payment.entity.Payment;
+import com.pronnect.payment.enums.PaymentStatus;
+import com.pronnect.payment.repository.PaymentRepository;
 import com.pronnect.proposal.entity.Proposal;
+import com.pronnect.servicecontract.dto.ProfileSummaryResponse;
 import com.pronnect.servicecontract.entity.ServiceContract;
 import com.pronnect.servicecontract.enums.ServiceContractStatus;
 import com.pronnect.servicecontract.repository.ServiceContractRepository;
@@ -13,8 +17,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,6 +28,7 @@ import java.util.UUID;
 public class ServiceContractService {
 
     private final ServiceContractRepository repository;
+    private final PaymentRepository paymentRepository;
     private final AuthenticatedUserService auth;
 
     @Transactional
@@ -42,6 +49,40 @@ public class ServiceContractService {
     public List<ServiceContract> getMyContracts() {
         Account account = auth.getCurrentAccount();
         return repository.findAllByAccountId(account.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public ProfileSummaryResponse getProfileSummary(UUID accountId) {
+        List<ServiceContract> contracts = repository.findAllByAccountId(accountId);
+
+        int activeContracts = (int) contracts.stream()
+                .filter(c -> c.getStatus() == ServiceContractStatus.IN_PROGRESS || c.getStatus() == ServiceContractStatus.COMPLETED)
+                .count();
+
+        BigDecimal escrowBalance = contracts.stream()
+                .map(contract -> paymentRepository.findByServiceContractId(contract.getId()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(payment -> payment.getStatus() == PaymentStatus.HELD)
+                .map(Payment::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        String activeStatus;
+        boolean hasHeld = escrowBalance.compareTo(BigDecimal.ZERO) > 0;
+        boolean hasInProgress = contracts.stream().anyMatch(c -> c.getStatus() == ServiceContractStatus.IN_PROGRESS);
+        boolean hasCompleted = contracts.stream().anyMatch(c -> c.getStatus() == ServiceContractStatus.COMPLETED);
+
+        if (hasHeld) {
+            activeStatus = "Pagamento em Escrow";
+        } else if (hasInProgress) {
+            activeStatus = "Em andamento";
+        } else if (hasCompleted) {
+            activeStatus = "Aguardando validação";
+        } else {
+            activeStatus = "Nenhum projeto em andamento";
+        }
+
+        return new ProfileSummaryResponse(activeContracts, activeStatus, escrowBalance);
     }
 
     @Transactional

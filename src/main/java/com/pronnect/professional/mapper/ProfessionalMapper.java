@@ -17,10 +17,12 @@ public class ProfessionalMapper {
 
         return new ProfessionalProfileResponse(
                 entity.getId(),
+                entity.getAccount().getId(),
                 entity.getAccount().getName(),
                 entity.getHeadline(),
                 entity.getDescription(),
                 entity.getContactEmail(),
+                entity.getAvatarUrl(),
                 entity.isProfileCompleted(),
                 skills,
                 entity.getCreatedAt()

@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     Page<Message> findByConversationIdOrderByCreatedAtAsc(UUID conversationId, Pageable pageable);
+
+    void deleteByConversationId(UUID conversationId);
 }

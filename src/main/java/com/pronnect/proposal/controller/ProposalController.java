@@ -23,6 +23,12 @@ public class ProposalController {
     private final ProposalService service;
     private final ProposalMapper mapper;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProposalResponse> getById(@PathVariable UUID id) {
+        Proposal proposal = service.getById(id);
+        return ResponseEntity.ok(mapper.toResponse(proposal));
+    }
+
     @GetMapping("/me")
     @PreAuthorize("hasRole('PROFESSIONAL')")
     public ResponseEntity<List<ProposalResponse>> myProposals() {

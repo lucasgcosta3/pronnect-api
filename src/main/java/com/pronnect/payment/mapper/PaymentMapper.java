@@ -15,8 +15,13 @@ public class PaymentMapper {
                 payment.getPlatformFee(),
                 payment.getProfessionalAmount(),
                 payment.getStatus().name(),
+                payment.getPaymentMethod(),
+                payment.getPixQrCode(),
+                payment.getPixCopyPaste(),
+                payment.getExpiresAt(),
                 payment.getCreatedAt(),
-                payment.getReleasedAt()
+                payment.getReleasedAt(),
+                payment.getRefundedAt()
         );
     }
 }

@@ -8,9 +8,11 @@ import com.pronnect.company.dto.UpdateCompanyProfileRequest;
 import com.pronnect.company.repository.CompanyRepository;
 import com.pronnect.exception.NotFoundException;
 import com.pronnect.exception.ProfileAlreadyExistsException;
+import com.pronnect.storage.AvatarStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -20,6 +22,7 @@ public class CompanyProfileService {
 
     private final CompanyRepository repository;
     private final AuthenticatedUserService authenticatedUserService;
+    private final AvatarStorageService avatarStorageService;
 
     @Transactional
     public CompanyProfile createProfile(CreateCompanyProfileRequest request) {
@@ -36,6 +39,7 @@ public class CompanyProfileService {
                 .description(request.description())
                 .contactEmail(request.contactEmail())
                 .location(request.location())
+                .avatarUrl(request.avatarUrl())
                 .profileCompleted(false)
                 .build();
 
@@ -64,8 +68,17 @@ public class CompanyProfileService {
         profile.setDescription(request.description());
         profile.setContactEmail(request.contactEmail());
         profile.setLocation(request.location());
+        profile.setAvatarUrl(request.avatarUrl());
         profile.setProfileCompleted(isProfileComplete(profile));
 
+        return repository.save(profile);
+    }
+
+    @Transactional
+    public CompanyProfile updateAvatar(MultipartFile file) {
+        CompanyProfile profile = getCurrentCompany();
+        String avatarUrl = avatarStorageService.store(file);
+        profile.setAvatarUrl(avatarUrl);
         return repository.save(profile);
     }
 

@@ -43,4 +43,10 @@ public class ConversationController {
 
         return ResponseEntity.ok(mapper.toResponse(conversation, accountId));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

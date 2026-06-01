@@ -7,6 +7,8 @@ import com.pronnect.exception.ForbiddenException;
 import com.pronnect.exception.NotFoundException;
 import com.pronnect.payment.entity.Payment;
 import com.pronnect.payment.enums.PaymentStatus;
+import com.pronnect.payment.gateway.PaymentGateway;
+import com.pronnect.payment.gateway.PixPaymentData;
 import com.pronnect.payment.repository.PaymentRepository;
 import com.pronnect.servicecontract.entity.ServiceContract;
 import com.pronnect.servicecontract.enums.ServiceContractStatus;
@@ -30,16 +32,10 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ServiceContractRepository serviceContractRepository;
     private final AuthenticatedUserService auth;
+    private final PaymentGateway paymentGateway;
 
-    /**
-     * Simulates holding payment in escrow.
-     * The amount is derived automatically from the proposal price:
-     *   - professionalAmount = proposal price (what the professional receives)
-     *   - platformFee        = proposal price × 10%
-     *   - amount (total)     = proposal price + platformFee (what the company pays)
-     */
     @Transactional
-    public Payment hold(UUID serviceContractId) {
+    public Payment createPayment(UUID serviceContractId) {
         Account account = auth.getCurrentAccount();
 
         ServiceContract contract = serviceContractRepository.findById(serviceContractId)
@@ -58,18 +54,60 @@ public class PaymentService {
             throw new BusinessException("Payment already exists for this contract");
         }
 
-        // Price from the accepted proposal = what the professional earns
         BigDecimal proposalPrice = contract.getProposal().getPrice();
         BigDecimal platformFee = proposalPrice.multiply(PLATFORM_FEE_PERCENT).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal totalCharged = proposalPrice.add(platformFee); // company pays this
+        BigDecimal totalCharged = proposalPrice.add(platformFee);
+
+        PixPaymentData pixData = paymentGateway.createPixPayment(
+                totalCharged,
+                "Pagamento para contrato " + contract.getId(),
+                account.getEmail()
+        );
 
         Payment payment = new Payment();
         payment.setServiceContract(contract);
-        payment.setAmount(totalCharged);           // total charged to the company
-        payment.setPlatformFee(platformFee);        // Pronnect keeps this
-        payment.setProfessionalAmount(proposalPrice); // professional receives this
-        payment.setStatus(PaymentStatus.HELD);
+        payment.setAmount(totalCharged);
+        payment.setPlatformFee(platformFee);
+        payment.setProfessionalAmount(proposalPrice);
+        payment.setStatus(PaymentStatus.PENDING);
+        
+        payment.setExternalPaymentId(pixData.externalPaymentId());
+        payment.setPaymentMethod("pix");
+        payment.setPixQrCode(pixData.pixQrCode());
+        payment.setPixCopyPaste(pixData.pixCopyPaste());
+        payment.setExpiresAt(pixData.expiresAt());
 
+        return paymentRepository.save(payment);
+    }
+
+    @Transactional
+    public Payment simulateApproval(UUID paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new NotFoundException("Payment not found"));
+
+        if (payment.getStatus() != PaymentStatus.PENDING) {
+            throw new BusinessException("Payment must be PENDING to be approved");
+        }
+
+        payment.setStatus(PaymentStatus.HELD);
+        return paymentRepository.save(payment);
+    }
+
+    @Transactional
+    public Payment cancel(UUID paymentId) {
+        Account account = auth.getCurrentAccount();
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new NotFoundException("Payment not found"));
+
+        if (!payment.getServiceContract().getProposal().getCompany().getAccount().getId().equals(account.getId())) {
+            throw new ForbiddenException("Only the company can cancel the payment");
+        }
+
+        if (payment.getStatus() != PaymentStatus.PENDING) {
+            throw new BusinessException("Only PENDING payments can be cancelled");
+        }
+
+        payment.setStatus(PaymentStatus.CANCELLED);
         return paymentRepository.save(payment);
     }
 
@@ -91,12 +129,38 @@ public class PaymentService {
         Payment payment = paymentRepository.findByServiceContractId(serviceContractId)
                 .orElseThrow(() -> new NotFoundException("Payment not found"));
 
-        if (payment.getStatus() == PaymentStatus.RELEASED) {
-            throw new BusinessException("Payment already released");
+        if (payment.getStatus() != PaymentStatus.HELD) {
+            throw new BusinessException("Payment must be HELD to be released");
         }
 
         payment.setStatus(PaymentStatus.RELEASED);
         payment.setReleasedAt(LocalDateTime.now());
+
+        return paymentRepository.save(payment);
+    }
+
+    @Transactional
+    public Payment refund(UUID serviceContractId) {
+        Account account = auth.getCurrentAccount();
+
+        ServiceContract contract = serviceContractRepository.findById(serviceContractId)
+                .orElseThrow(() -> new NotFoundException("Service contract not found"));
+
+        if (!contract.getProposal().getCompany().getAccount().getId().equals(account.getId())) {
+            throw new ForbiddenException("Only the company can refund the payment");
+        }
+
+        Payment payment = paymentRepository.findByServiceContractId(serviceContractId)
+                .orElseThrow(() -> new NotFoundException("Payment not found"));
+
+        if (payment.getStatus() != PaymentStatus.HELD) {
+            throw new BusinessException("Payment must be HELD to be refunded");
+        }
+
+        paymentGateway.refundPayment(payment.getExternalPaymentId());
+
+        payment.setStatus(PaymentStatus.REFUNDED);
+        payment.setRefundedAt(LocalDateTime.now());
 
         return paymentRepository.save(payment);
     }

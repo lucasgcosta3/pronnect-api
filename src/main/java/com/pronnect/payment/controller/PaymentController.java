@@ -35,7 +35,7 @@ public class PaymentController {
     @PostMapping
     @PreAuthorize("hasRole('COMPANY')")
     public ResponseEntity<PaymentResponse> hold(@RequestBody @Valid CreatePaymentRequest request) {
-        Payment payment = service.hold(request.serviceContractId());
+        Payment payment = service.createPayment(request.serviceContractId());
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(payment));
     }
 
@@ -43,6 +43,22 @@ public class PaymentController {
     @PreAuthorize("hasRole('COMPANY')")
     public ResponseEntity<PaymentResponse> release(@PathVariable UUID contractId) {
         Payment payment = service.release(contractId);
+        return ResponseEntity.ok(mapper.toResponse(payment));
+    }
+
+    @PatchMapping("/contract/{contractId}/refund")
+    @PreAuthorize("hasRole('COMPANY')")
+    public ResponseEntity<PaymentResponse> refund(@PathVariable UUID contractId) {
+        Payment payment = service.refund(contractId);
+        return ResponseEntity.ok(mapper.toResponse(payment));
+    }
+
+    // Simulation endpoint removed to avoid explicit simulation flow in UI
+
+    @PatchMapping("/{paymentId}/cancel")
+    @PreAuthorize("hasRole('COMPANY')")
+    public ResponseEntity<PaymentResponse> cancel(@PathVariable UUID paymentId) {
+        Payment payment = service.cancel(paymentId);
         return ResponseEntity.ok(mapper.toResponse(payment));
     }
 }

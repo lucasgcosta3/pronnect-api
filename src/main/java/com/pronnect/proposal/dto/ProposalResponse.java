@@ -11,6 +11,7 @@ public record ProposalResponse(
         String message,
         BigDecimal price,
         String status,
-        UUID contractId
+        UUID contractId,
+        boolean isFinished
 
 ) {}

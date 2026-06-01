@@ -11,7 +11,9 @@ public record UpdateCompanyProfileRequest(
         @Email
         String contactEmail,
 
-        String location
+        String location,
+
+        String avatarUrl
 
 ) {
 }

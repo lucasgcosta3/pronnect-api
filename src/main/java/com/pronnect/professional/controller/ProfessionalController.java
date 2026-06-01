@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -61,6 +62,15 @@ public class ProfessionalController {
             @RequestBody @Valid UpdateProfessionalProfileRequest request
     ) {
         ProfessionalProfile profile = service.updateProfile(request);
+        return ResponseEntity.ok(mapper.toResponse(profile));
+    }
+
+    @PostMapping(value = "/me/avatar", consumes = {"multipart/form-data"})
+    @PreAuthorize("hasRole('PROFESSIONAL')")
+    public ResponseEntity<ProfessionalProfileResponse> uploadAvatar(
+            @RequestPart("file") MultipartFile file
+    ) {
+        ProfessionalProfile profile = service.updateAvatar(file);
         return ResponseEntity.ok(mapper.toResponse(profile));
     }
 

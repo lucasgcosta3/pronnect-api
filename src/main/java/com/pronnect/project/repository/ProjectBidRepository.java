@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 @Repository
 public interface ProjectBidRepository extends JpaRepository<ProjectBid, UUID> {
@@ -17,4 +18,6 @@ public interface ProjectBidRepository extends JpaRepository<ProjectBid, UUID> {
     boolean existsByProjectIdAndProfessionalId(UUID projectId, UUID professionalId);
 
     long countByProjectId(UUID projectId);
+
+    Optional<ProjectBid> findByProposalId(UUID proposalId);
 }

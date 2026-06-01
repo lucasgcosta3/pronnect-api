@@ -13,6 +13,9 @@ import com.pronnect.servicecontract.dto.ProfileSummaryResponse;
 import com.pronnect.servicecontract.entity.ServiceContract;
 import com.pronnect.servicecontract.enums.ServiceContractStatus;
 import com.pronnect.servicecontract.repository.ServiceContractRepository;
+import com.pronnect.project.repository.ProjectRepository;
+import com.pronnect.project.repository.ProjectBidRepository;
+import com.pronnect.project.enums.ProjectStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,8 @@ public class ServiceContractService {
     private final ServiceContractRepository repository;
     private final PaymentRepository paymentRepository;
     private final AuthenticatedUserService auth;
+    private final ProjectBidRepository projectBidRepository;
+    private final ProjectRepository projectRepository;
 
     @Transactional
     public ServiceContract createForProposal(Proposal proposal) {
@@ -119,6 +124,18 @@ public class ServiceContractService {
 
         contract.setStatus(ServiceContractStatus.VALIDATED);
         contract.setValidatedAt(LocalDateTime.now());
+
+        // Also update associated project status to COMPLETED when service is validated
+        try {
+            projectBidRepository.findByProposalId(contract.getProposal().getId())
+                    .ifPresent(pb -> {
+                        var project = pb.getProject();
+                        project.setStatus(ProjectStatus.COMPLETED);
+                        projectRepository.save(project);
+                    });
+        } catch (Exception ignored) {
+            // Non-fatal: if we cannot update project, still continue validating contract
+        }
 
         return repository.save(contract);
     }

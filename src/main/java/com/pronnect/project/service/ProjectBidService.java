@@ -143,6 +143,10 @@ public class ProjectBidService {
         // Initialize Chat and Service Contract
         conversationService.createForProposal(proposal);
         serviceContractService.createForProposal(proposal);
+
+        // Persist bid and project changes to ensure frontend reads updated proposalId/status immediately
+        bidRepository.save(bid);
+        projectRepository.save(project);
     }
 
     @Transactional

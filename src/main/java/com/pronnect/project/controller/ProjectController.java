@@ -93,7 +93,7 @@ public class ProjectController {
     public ResponseEntity<List<BidResponse>> getBidsForProject(@PathVariable UUID id) {
         List<BidResponse> list = bidService.getBidsForProject(id)
                 .stream()
-                .map(bidMapper::toResponse)
+                .map(bid -> bidMapper.toResponse(bid))
                 .toList();
         return ResponseEntity.ok(list);
     }
@@ -103,7 +103,7 @@ public class ProjectController {
     public ResponseEntity<List<BidResponse>> getMyBids() {
         List<BidResponse> list = bidService.getMyBids()
                 .stream()
-                .map(bidMapper::toResponse)
+                .map(bid -> bidMapper.toResponse(bid))
                 .toList();
         return ResponseEntity.ok(list);
     }

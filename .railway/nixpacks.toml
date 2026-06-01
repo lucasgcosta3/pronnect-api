@@ -1,0 +1,5 @@
+[build]
+nixPackages = ["maven"]
+
+[start]
+runCommand = "java -jar target/pronnect-api-0.0.1-SNAPSHOT.jar"

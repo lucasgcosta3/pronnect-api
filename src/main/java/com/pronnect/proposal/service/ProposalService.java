@@ -47,10 +47,9 @@ public class ProposalService {
                 .orElseThrow(() -> new NotFoundException("Professional not found"));
 
         boolean alreadyExists = repository
-                .existsByCompanyIdAndProfessionalIdAndStatusIn(
+                .existsActiveProposal(
                         company.getId(),
-                        professional.getId(),
-                        List.of(ProposalStatus.PENDING, ProposalStatus.ACCEPTED)
+                        professional.getId()
                 );
 
         if (alreadyExists) {
